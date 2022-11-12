@@ -1,7 +1,7 @@
 const express = require('express');
 const expressSession = require('express-session');
 const cors = require('cors');
-// const helmet = require('helmet');
+const helmet = require('helmet');
 const passport = require('passport');
 require('dotenv').config();
 
@@ -9,7 +9,7 @@ const app = express();
 const PORT = process.env.PORT || 5050;
 
 // // Initialize HTTP Headers middleware
-// app.use(helmet());
+app.use(helmet());
 
 // Enable CORS (with additional config options required for cookies)
 app.use(
@@ -27,6 +27,7 @@ app.use(
     saveUninitialized: true,
   })
 );
+
 // =========== Passport Config ============
 
 // Initialize Passport middleware

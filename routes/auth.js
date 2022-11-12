@@ -3,21 +3,32 @@ const { use } = require('passport');
 const router = express.Router();
 var passport = require('passport');
 require('dotenv').config();
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const GoogleStrategy = require('passport-google-oauth2').Strategy;
 
-//function that verify if user exists
+//Environment variables
+let clientID = process.env.GOOGLE_CLIENT_ID;
+let clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+let callbackURL = process.env.GOOGLE_CALLBACK_URL;
+
+console.log(clientID);
+console.log(clientSecret);
+console.log(callbackURL);
+
+//function that verify if user exists on data
 authUser = (request, accessToken, refreshToken, profile, done) => {
   console.log(profile);
   return done(null, profile);
 };
 
+console.log();
+
 //Use "GoogleStrategy" as the Authentication Strategy
 passport.use(
   new GoogleStrategy(
     {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_CALLBACK_URL,
+      clientID: clientID,
+      clientSecret: clientSecret,
+      callbackURL: callbackURL,
       passReqToCallback: true,
     },
     authUser
@@ -26,22 +37,19 @@ passport.use(
 
 //serealize user
 passport.serializeUser((user, done) => {
-  console.log('serializeUser (user object):', user);
+  // console.log('serializeUser (user object):', user);
   // Store the user id, username and name in session
   done(null, { id: user.id, username: user.username, name: user.name });
 });
 
 //deserealize user
 passport.deserializeUser((user, done) => {
-  console.log('Deserialized User:', user);
+  // console.log('Deserialized User:', user);
   done(null, user);
 });
 
 //route to authenticate with google
-router.get(
-  '/google',
-  passport.authenticate('google', { scope: ['email', 'profile'] })
-);
+router.get('/google', passport.authenticate('google', { scope: ['profile'] }));
 
 //Callback route for the authentication
 router.get(
