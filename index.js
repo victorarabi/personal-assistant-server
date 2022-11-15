@@ -35,10 +35,11 @@ app.use(passport.initialize());
 // Passport.session middleware alters the `req` object with the `user` value
 app.use(passport.session());
 
-const authRoutes = require('./routes/auth');
+const authRoutes = require('./routes/googleAuth');
 
-app.use('/auth', authRoutes);
+//auth route for google
+app.use('/auth/google', authRoutes);
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server listening on port ${PORT}.`);
+  console.log(`🚀 Server listening to requests on port ${PORT}!`);
 });

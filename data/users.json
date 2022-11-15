@@ -1,8 +1,8 @@
 [
   {
-    "id": "<generate ID>",
-    "usename": "victorarabi",
-    "password": "############",
-    "name": "Victor Arabi"
+    "provider": "google",
+    "id": "113270243965447142722",
+    "name": "Victor Augusto Arabi Fernandes de Oliveira",
+    "picture": "https://lh3.googleusercontent.com/a/ALm5wu2rAQlzm7l1Pw5qmYGVcZ3gpKTuA0voIZJR-3TS=s96-c"
   }
 ]
