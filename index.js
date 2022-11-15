@@ -35,10 +35,25 @@ app.use(passport.initialize());
 // Passport.session middleware alters the `req` object with the `user` value
 app.use(passport.session());
 
-const authRoutes = require('./routes/googleAuth');
+//import routes
+const googleAuthRoutes = require('./routes/googleAuth');
+const localAuthRoutes = require('./routes/localAuth');
 
 //auth route for google
-app.use('/auth/google', authRoutes);
+app.use('/auth/google', googleAuthRoutes);
+
+//auth route for local strategy (username + password)
+app.use('/auth/login', localAuthRoutes);
+
+//logout route
+app.post('/logout', function (req, res, next) {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect(process.env.CLIENT_URL);
+  });
+});
 
 app.listen(PORT, () => {
   console.log(`🚀 Server listening to requests on port ${PORT}!`);

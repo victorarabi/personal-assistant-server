@@ -1,5 +1,4 @@
 var express = require('express');
-const { use } = require('passport');
 const fs = require('fs');
 const router = express.Router();
 var passport = require('passport');
@@ -40,6 +39,8 @@ authUser = (request, accessToken, refreshToken, profile, done) => {
     //if user does not exist, creates a new user
     const newUser = {
       provider: profile.provider,
+      password: null,
+      username: null,
       id: profile.id,
       name: profile.displayName,
       picture: profile.picture,
@@ -76,15 +77,15 @@ passport.serializeUser((user, done) => {
 
 //deserealize user
 passport.deserializeUser((user, done) => {
-  let userCheck = [];
+  let authenticatedUser = [];
   //filters db to search for the user based on the serealized info provided
   db.forEach((record) => {
     if (record.provider === user.provider && record.id === user.id) {
-      userCheck.push(record);
+      authenticatedUser.push(record);
     }
   });
-  console.log('Deserialized User:', userCheck[0]);
-  done(null, userCheck[0]);
+  console.log('Deserialized User:', authenticatedUser[0]);
+  done(null, authenticatedUser[0]);
 });
 
 //route to authenticate with google
@@ -98,15 +99,5 @@ router.get(
     failureRedirect: `${process.env.CLIENT_URL}/auth-fail`,
   })
 );
-
-//logout route
-router.post('/logout', function (req, res, next) {
-  req.logout(function (err) {
-    if (err) {
-      return next(err);
-    }
-    res.redirect(process.env.CLIENT_URL);
-  });
-});
 
 module.exports = router;
