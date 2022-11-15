@@ -35,6 +35,8 @@ app.use(passport.initialize());
 // Passport.session middleware alters the `req` object with the `user` value
 app.use(passport.session());
 
+// ========== Routes =======================
+
 //import routes
 const googleAuthRoutes = require('./routes/googleAuth');
 const localAuthRoutes = require('./routes/localAuth');
