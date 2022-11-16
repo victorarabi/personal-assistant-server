@@ -28,14 +28,13 @@ app.use(
   })
 );
 
-// =========== Passport Config ============
-
+//Passport Config
 // Initialize Passport middleware
 app.use(passport.initialize());
 // Passport.session middleware alters the `req` object with the `user` value
 app.use(passport.session());
 
-// ========== Routes =======================
+//Routes
 
 //import routes
 const googleAuthRoutes = require('./routes/googleAuth');
