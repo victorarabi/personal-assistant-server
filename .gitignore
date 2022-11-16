@@ -22,5 +22,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+#Environment files
 *.env
+#Google credentials and tokens file
 credentials.json
+token.json
+#user database
+users.json
