@@ -39,15 +39,19 @@ app.use(passport.session());
 //import routes
 const googleAuthRoutes = require('./routes/googleAuth');
 const localAuthRoutes = require('./routes/localAuth');
+const profileRoutes = require('./routes/profile');
 
 //auth route for google
 app.use('/auth/google', googleAuthRoutes);
 
 //auth route for local strategy (username + password)
-app.use('/auth/login', localAuthRoutes);
+app.use('/auth/local', localAuthRoutes);
+
+//route for profile data
+app.use('/profile', profileRoutes);
 
 //logout route
-app.post('/logout', function (req, res, next) {
+app.get('/logout', function (req, res, next) {
   req.logout(function (err) {
     if (err) {
       return next(err);
