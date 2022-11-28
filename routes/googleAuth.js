@@ -10,7 +10,7 @@ let clientID = process.env.GOOGLE_CLIENT_ID;
 let clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 let callbackURL = process.env.GOOGLE_CALLBACK_URL;
 //db variables
-let filePath = './data/users.json';
+let filePath = './model/users.json';
 let db = [];
 
 //loads userDatabase into db variable

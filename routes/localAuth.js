@@ -5,7 +5,7 @@ var passport = require('passport');
 require('dotenv').config();
 const LocalStrategy = require('passport-local').Strategy;
 //db variables
-let filePath = './data/users.json';
+let filePath = './model/users.json';
 let db = [];
 
 //loads userDatabase into db variable

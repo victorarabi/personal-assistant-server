@@ -1,9 +1,12 @@
 const express = require('express');
 const fs = require('fs');
 const router = express.Router();
+const googleCalendar = require('../controllers/googleCalendar');
 
+//Environment variables
+let apiKey = process.env.GOOGLE_API_KEY;
 //db variables
-let filePath = './data/users.json';
+let filePath = './model/users.json';
 let db = [];
 
 //loads userDatabase into db variable
@@ -13,6 +16,7 @@ fs.readFile(filePath, 'utf-8', (err, data) => {
   }
   db = JSON.parse(data);
 });
+
 //get request
 router.use((req, res, next) => {
   if (req.user === undefined) {
@@ -29,6 +33,7 @@ router.get('/', (req, res) => {
     accessToken: req.user.accessToken,
     email: req.user.email,
   };
+  console.log(googleCalendar.getEvents(userData.email, apiKey));
   res.send(userData);
 });
 
