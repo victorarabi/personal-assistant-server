@@ -23,6 +23,7 @@ fs.readFile(filePath, 'utf-8', (err, data) => {
 
 //function that verify if user exists on data and returns user data for serealization
 authUser = (request, accessToken, refreshToken, profile, done) => {
+  profile.accessToken = accessToken;
   let userCheck = [];
   //filters db to search for the user
   db.forEach((record) => {
@@ -44,6 +45,7 @@ authUser = (request, accessToken, refreshToken, profile, done) => {
       id: profile.id,
       name: profile.displayName,
       picture: profile.picture,
+      accessToken: profile.accessToken,
     };
     db.push(newUser);
     fs.writeFile(filePath, JSON.stringify(db), (err) => {
@@ -72,7 +74,11 @@ passport.use(
 //serealize user
 passport.serializeUser((user, done) => {
   // Store the user id, and provider in session
-  done(null, { id: user.id, provider: user.provider });
+  done(null, {
+    id: user.id,
+    provider: user.provider,
+    accessToken: user.accessToken,
+  });
 });
 
 //deserealize user
@@ -89,7 +95,12 @@ passport.deserializeUser((user, done) => {
 });
 
 //route to authenticate with google
-router.get('/', passport.authenticate('google', { scope: ['profile'] }));
+router.get(
+  '/',
+  passport.authenticate('google', {
+    scope: ['profile', 'email', 'https://www.googleapis.com/auth/calendar'],
+  })
+);
 
 //Callback route for the authentication
 router.get(

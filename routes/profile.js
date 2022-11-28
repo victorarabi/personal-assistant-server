@@ -13,7 +13,6 @@ fs.readFile(filePath, 'utf-8', (err, data) => {
   }
   db = JSON.parse(data);
 });
-
 //get request
 router.use((req, res, next) => {
   if (req.user === undefined) {
@@ -23,6 +22,7 @@ router.use((req, res, next) => {
 });
 
 router.get('/', (req, res) => {
-  console.log(req.user);
-  res.send('');
+  res.send(req.user);
 });
+
+module.exports = router;
