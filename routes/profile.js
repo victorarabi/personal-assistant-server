@@ -22,7 +22,14 @@ router.use((req, res, next) => {
 });
 
 router.get('/', (req, res) => {
-  res.send(req.user);
+  let userData = {
+    id: req.user.id,
+    name: req.user.name,
+    picture: req.user.picture,
+    accessToken: req.user.accessToken,
+    email: req.user.email,
+  };
+  res.send(userData);
 });
 
 module.exports = router;

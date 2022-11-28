@@ -23,6 +23,7 @@ fs.readFile(filePath, 'utf-8', (err, data) => {
 
 //function that verify if user exists on data and returns user data for serealization
 authUser = (request, accessToken, refreshToken, profile, done) => {
+  console.log(profile);
   profile.accessToken = accessToken;
   let userCheck = [];
   //filters db to search for the user
@@ -42,6 +43,7 @@ authUser = (request, accessToken, refreshToken, profile, done) => {
       provider: profile.provider,
       password: null,
       username: null,
+      email: profile.email,
       id: profile.id,
       name: profile.displayName,
       picture: profile.picture,
