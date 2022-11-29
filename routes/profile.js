@@ -1,23 +1,31 @@
 const express = require('express');
-const fs = require('fs');
+const fs = require('fs').promises;
+const path = require('path');
+const process = require('process');
 const router = express.Router();
 const googleCalendar = require('../controllers/googleCalendar');
+const DB = require('../controllers/dbControllers');
 
 //Environment variables
-let apiKey = process.env.GOOGLE_API_KEY;
+const API_KEY = process.env.GOOGLE_API_KEY;
 //db variables
 let filePath = './model/users.json';
 let db = [];
 
-//loads userDatabase into db variable
-fs.readFile(filePath, 'utf-8', (err, data) => {
-  if (err) {
-    console.log(err);
-  }
-  db = JSON.parse(data);
-});
+const dbTest = DB.loadUserData();
+console.log(dbTest);
 
-//get request
+db = DB.loadUserData();
+
+//loads userDatabase into db variable
+// fs.readFile(filePath, 'utf-8', (err, data) => {
+//   if (err) {
+//     console.log(err);
+//   }
+//   db = JSON.parse(data);
+// });
+
+//authorization middleware
 router.use((req, res, next) => {
   if (req.user === undefined) {
     return res.status(401).json({ message: 'Unauthorized' });
@@ -25,6 +33,7 @@ router.use((req, res, next) => {
   next();
 });
 
+//get req
 router.get('/', (req, res) => {
   let userData = {
     id: req.user.id,
@@ -33,7 +42,7 @@ router.get('/', (req, res) => {
     accessToken: req.user.accessToken,
     email: req.user.email,
   };
-  console.log(googleCalendar.getEvents(userData.email, apiKey));
+  googleCalendar.getEvents(userData.email, API_KEY);
   res.send(userData);
 });
 
