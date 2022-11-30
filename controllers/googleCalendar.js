@@ -8,9 +8,27 @@ exports.getEvents = (calendarID, apiKey) => {
   axios
     .get(url)
     .then((res) => {
-      return res.data;
+      const content = [];
+      console.log(res.data.items);
+      // content.push(res.data.items);
+      // console.log(content[0]);
+      // content.map((event) => {
+      //   console.log(event.start);
+      // });
     })
     .catch((e) => {
       console.log(e);
+    });
+};
+
+exports.createCalendar = (accessToken, summary) => {
+  const url = `https://www.googleapis.com/calendar/v3/calendars`;
+  axios
+    .post(url, { summary: summary }, { Authorization: `Bearer ${accessToken}` })
+    .then((result) => {
+      console.log(result);
+    })
+    .catch((err) => {
+      console.log(err);
     });
 };

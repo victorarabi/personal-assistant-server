@@ -40,6 +40,7 @@ app.use(passport.session());
 const googleAuthRoutes = require('./routes/googleAuth');
 const localAuthRoutes = require('./routes/localAuth');
 const profileRoutes = require('./routes/profile');
+const calendarRouters = require('./routes/calendar');
 
 //auth route for google
 app.use('/auth/google', googleAuthRoutes);
@@ -50,6 +51,9 @@ app.use('/auth/local', localAuthRoutes);
 //route for profile data
 app.use('/profile', profileRoutes);
 
+//route for calendar data
+app.use('/calendar', calendarRouters);
+
 //logout route
 app.get('/logout', function (req, res, next) {
   req.logout(function (err) {
@@ -58,6 +62,10 @@ app.get('/logout', function (req, res, next) {
     }
     res.redirect(process.env.CLIENT_URL);
   });
+});
+
+app.get('/', (req, res, next) => {
+  res.json({ message: 'welcome to Personal Assistant API' });
 });
 
 app.listen(PORT, () => {

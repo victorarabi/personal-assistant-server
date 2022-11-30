@@ -1,7 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const router = express.Router();
-var passport = require('passport');
+const passport = require('passport');
 require('dotenv').config();
 const GoogleStrategy = require('passport-google-oauth2').Strategy;
 
@@ -23,8 +23,6 @@ fs.readFile(filePath, 'utf-8', (err, data) => {
 
 //function that verify if user exists on data and returns user data for serealization
 authUser = (request, accessToken, refreshToken, profile, done) => {
-  console.log(profile);
-  profile.accessToken = accessToken;
   let userCheck = [];
   //filters db to search for the user
   db.forEach((record) => {
@@ -35,7 +33,7 @@ authUser = (request, accessToken, refreshToken, profile, done) => {
   //Verify if there's an existing user
   if (userCheck[0]) {
     //if user exists, return the user to serealize function
-    console.log('user found on database:', userCheck[0]);
+    // console.log('user found on database:', userCheck[0]);
     return done(null, userCheck[0]);
   } else {
     //if user does not exist, creates a new user
@@ -47,7 +45,15 @@ authUser = (request, accessToken, refreshToken, profile, done) => {
       id: profile.id,
       name: profile.displayName,
       picture: profile.picture,
-      accessToken: profile.accessToken,
+      calendarAuth: false,
+      tokens: {
+        access_token: null,
+        refresh_token: null,
+        scope: null,
+        token_type: null,
+        id_token: null,
+        expiry_date: null,
+      },
     };
     db.push(newUser);
     fs.writeFile(filePath, JSON.stringify(db), (err) => {
@@ -55,7 +61,7 @@ authUser = (request, accessToken, refreshToken, profile, done) => {
         console.log('Error creating user user', err);
       }
     });
-    console.log('user created on db', newUser);
+    // console.log('user created on db', newUser);
     return done(null, newUser);
   }
 };
@@ -79,7 +85,7 @@ passport.serializeUser((user, done) => {
   done(null, {
     id: user.id,
     provider: user.provider,
-    accessToken: user.accessToken,
+    tokens: user.tokens,
   });
 });
 
@@ -92,7 +98,6 @@ passport.deserializeUser((user, done) => {
       authenticatedUser.push(record);
     }
   });
-  console.log('Deserialized User:', authenticatedUser[0]);
   done(null, authenticatedUser[0]);
 });
 
@@ -100,7 +105,7 @@ passport.deserializeUser((user, done) => {
 router.get(
   '/',
   passport.authenticate('google', {
-    scope: ['profile', 'email', 'https://www.googleapis.com/auth/calendar'],
+    scope: ['profile', 'email'],
   })
 );
 
