@@ -53,6 +53,7 @@ authUser = (request, accessToken, refreshToken, profile, done) => {
         token_type: null,
         id_token: null,
         expiry_date: null,
+        api_key: null,
       },
     };
     db.push(newUser);

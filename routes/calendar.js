@@ -3,12 +3,14 @@ require('dotenv').config();
 const express = require('express');
 const fs = require('fs');
 const url = require('url');
+const { v4: uuidv4 } = require('uuid');
 const router = express.Router();
 
 //environment variables
 const CLIENT_ID = process.env.CALENDAR_CLIENT_ID;
 const CLIENT_SECRET = process.env.CALENDAR_CLIENT_SECRET;
 const REDIRECT_URL = process.env.CALENDAR_REDIRECT_URL;
+const API_KEY = process.env.GOOGLE_API_KEY;
 
 //db variables
 let filePathDb = './model/users.json';
@@ -73,7 +75,7 @@ async function oauth2Callback(req, res) {
         return false;
       }
     });
-    // oauth2Client.setCredentials(tokens); ->>move to calendar/request
+
     //checks if it is the first request, then save credentials with refresh_token -> that only happens on the first time in which the user provides access to the app.
     if (userCredential.refresh_token) {
       db[indexOfUser].calendarAuth = true;
@@ -83,6 +85,7 @@ async function oauth2Callback(req, res) {
       db[indexOfUser].tokens.token_type = userCredential.token_type;
       db[indexOfUser].tokens.id_token = userCredential.id_token;
       db[indexOfUser].tokens.expiry_date = userCredential.expiry_date;
+      db[indexOfUser].tokens.api_key = API_KEY;
     } else {
       //if has already authorized the app, google auth2 server will not send refresh token
       db[indexOfUser].calendarAuth = true;
@@ -91,6 +94,7 @@ async function oauth2Callback(req, res) {
       db[indexOfUser].tokens.token_type = userCredential.token_type;
       db[indexOfUser].tokens.id_token = userCredential.id_token;
       db[indexOfUser].tokens.expiry_date = userCredential.expiry_date;
+      db[indexOfUser].tokens.api_key = API_KEY;
     }
     req.user.tokens = db[indexOfUser].tokens;
     const dbUpdated = JSON.stringify(db);
@@ -99,10 +103,81 @@ async function oauth2Callback(req, res) {
         console.log(err);
       }
     });
-
     res.json({ logged_user: db[indexOfUser].tokens });
     //logic to  redirect back to backend front page
   }
+}
+
+//function that fetches calendar data
+async function getCalendarEvents(req, res, next) {
+  //fetch credentials from req.user
+  let userCredential = req?.user.tokens;
+  //generate oauth2client credentials based of user credential
+  oauth2Client.setCredentials(userCredential);
+  const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+  const response = await calendar.events.list({
+    calendarId: 'primary',
+    timeMin: new Date().toISOString(),
+    maxResults: 10,
+    singleEvents: true,
+    orderBy: 'startTime',
+  });
+  const events = response.data.items;
+  res.json({ events: events });
+}
+
+//authorization middleware
+function checkIfLogged(req, res, next) {
+  if (req.user === undefined) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+  next();
+}
+
+async function createEvents(req, res, next) {
+  const event = {
+    summary: 'Google I/O 2015',
+    location: '800 Howard St., San Francisco, CA 94103',
+    description: "A chance to hear more about Google's developer products.",
+    start: {
+      dateTime: '2022-12-01T09:00:00-07:00',
+      timeZone: 'America/Los_Angeles',
+    },
+    end: {
+      dateTime: '2022-12-02T17:00:00-07:00',
+      timeZone: 'America/Los_Angeles',
+    },
+    attendees: [],
+    reminders: {
+      useDefault: false,
+      overrides: [
+        { method: 'email', minutes: 24 * 60 },
+        { method: 'popup', minutes: 10 },
+      ],
+    },
+    creator: {
+      displayName: 'personal-assistant',
+    },
+  };
+
+  //will get event details based of req.body
+  //fetch credentials from req.user
+  let userCredential = req?.user.tokens;
+  //generate oauth2client credentials based of user credential
+  oauth2Client.setCredentials(userCredential);
+  const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+  calendar.events.insert(
+    { calendarId: req.user.email, resource: event },
+    function (err, event) {
+      if (err) {
+        res.json({
+          event: 'There was an error contacting the Calendar service: ' + err,
+        });
+        return;
+      }
+      res.json({ event: event.data });
+    }
+  );
 }
 
 //when use tries to authorize calendar app, they will be redirected to the authorizationUrl create above.
@@ -110,5 +185,11 @@ router.get('/auth/callback', oauth2Callback);
 
 //callback from the authorizationUrl
 router.get('/auth/request', authRequest);
+
+//request event data
+router.get('/events', checkIfLogged, getCalendarEvents);
+
+//boilerplate get to try creating events
+router.get('/events/create', checkIfLogged, createEvents);
 
 module.exports = router;
