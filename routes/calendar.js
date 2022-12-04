@@ -6,12 +6,15 @@ const {
   oauth2Callback,
   getCalendarEvents,
   createEvents,
+  revokeUserToken,
 } = require('../controllers/googleApiController');
 
 //when use tries to authorize calendar app, they will be redirected to the authorizationUrl create above.
 router.get('/auth/request', authRequest);
 //callback from the authorizationUrl
 router.get('/auth/callback', oauth2Callback);
+//revoke access to user data
+router.get('/auth/revoke', authorization, revokeUserToken);
 //request event data
 router.get('/events', authorization, getCalendarEvents);
 //boilerplate get to try creating events - WIP will change to POST

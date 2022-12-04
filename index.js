@@ -3,12 +3,12 @@ const expressSession = require('express-session');
 const cors = require('cors');
 const helmet = require('helmet');
 const passport = require('passport');
-require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
 const calendarRoutes = require('./routes/calendar');
 const app = express();
 const PORT = process.env.PORT || 5050;
+require('dotenv').config();
 
 // // Initialize HTTP Headers middleware
 app.use(helmet());
@@ -39,6 +39,11 @@ app.use(passport.session());
 app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
 app.use('/calendar', calendarRoutes);
+
+//test route
+app.get('/', (req, res) => {
+  res.json({ message: new Date().toISOString() });
+});
 
 //listen
 app.listen(PORT, () => {

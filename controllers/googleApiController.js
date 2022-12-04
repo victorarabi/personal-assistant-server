@@ -1,6 +1,7 @@
 const { google } = require('googleapis');
-require('dotenv').config();
 const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
+require('dotenv').config();
 
 //environment variables
 const CLIENT_ID = process.env.CALENDAR_CLIENT_ID;
@@ -8,11 +9,11 @@ const CLIENT_SECRET = process.env.CALENDAR_CLIENT_SECRET;
 const REDIRECT_URL = process.env.CALENDAR_REDIRECT_URL;
 const API_KEY = process.env.GOOGLE_API_KEY;
 const CLIENT_URL = process.env.CLIENT_URL;
+const DB_PATH = process.env.DB_PATH;
 
 //reads userDatabase and loads it into db variable
-let filePathDb = './model/users.json';
 let db = [];
-fs.readFile(filePathDb, 'utf-8', (err, data) => {
+fs.readFile(DB_PATH, 'utf-8', (err, data) => {
   if (err) {
     console.log(err);
   }
@@ -117,20 +118,38 @@ async function getCalendarEvents(req, res, next) {
     orderBy: 'startTime',
   });
   const events = response.data.items;
-  res.json({ events: events });
+  //filters events to show only user events
+  const userEvents = events.filter((event) => {
+    const trimID = event.id.slice(0, 17);
+    if (trimID === 'personalassistant') {
+      return true;
+    } else {
+      return false;
+    }
+  });
+  res.json({ events: userEvents });
 }
 
 async function createEvents(req, res, next) {
+  const summary = req.body.summary;
+  const description = req.body.description;
+  const location = req.body.location;
+  //generates uniqueid for event
+  const uuid = uuidv4();
+  let newId = uuid.split('-');
+  newId = newId.join('');
+  const eventId = 'personalassistant' + newId;
   const event = {
-    summary: 'Google I/O 2015',
+    summary: 'Google I/O 2022',
+    id: eventId,
     location: '800 Howard St., San Francisco, CA 94103',
     description: "A chance to hear more about Google's developer products.",
     start: {
-      dateTime: '2022-12-01T09:00:00-07:00',
+      dateTime: '2022-12-05T09:00:00-07:00',
       timeZone: 'America/Los_Angeles',
     },
     end: {
-      dateTime: '2022-12-02T17:00:00-07:00',
+      dateTime: '2022-12-05T17:00:00-07:00',
       timeZone: 'America/Los_Angeles',
     },
     attendees: [],
@@ -141,19 +160,15 @@ async function createEvents(req, res, next) {
         { method: 'popup', minutes: 10 },
       ],
     },
-    creator: {
-      displayName: 'personal-assistant',
-    },
   };
-
   //save credentials from req.user
-  const userCredential = req?.user.tokens;
+  const credential = req?.user.tokens;
   //generate oauth2client credentials based of user credential
-  oauth2Client.setCredentials(userCredential);
-
+  oauth2Client.setCredentials(credential);
+  //defines calendar api call using user auth and create new event
   const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
   calendar.events.insert(
-    { calendarId: req.user.email, resource: event },
+    { calendarId: 'primary', resource: event },
     function (err, event) {
       if (err) {
         res.json({
