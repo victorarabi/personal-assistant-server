@@ -1,5 +1,15 @@
 const fs = require('fs');
 
+//reads userDatabase and loads it into db variable
+let filePathDb = './model/users.json';
+let db = [];
+fs.readFile(filePathDb, 'utf-8', (err, data) => {
+  if (err) {
+    console.log(err);
+  }
+  db = JSON.parse(data);
+});
+
 //function that verify if user exists on data and returns user data for serealization
 function authUserGoogle(request, accessToken, refreshToken, profile, done) {
   let userCheck = [];
