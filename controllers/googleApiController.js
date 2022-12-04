@@ -1,9 +1,6 @@
 const { google } = require('googleapis');
 require('dotenv').config();
-const express = require('express');
 const fs = require('fs');
-const url = require('url');
-const router = express.Router();
 
 //environment variables
 const CLIENT_ID = process.env.CALENDAR_CLIENT_ID;
@@ -47,12 +44,12 @@ const authorizationUrl = oauth2Client.generateAuthUrl({
 });
 
 //function that handles auth request from user
-export function authRequest(req, res) {
+function authRequest(req, res) {
   res.redirect(authorizationUrl);
 }
 
 //function that handles oauth2 callback
-export async function oauth2Callback(req, res) {
+async function oauth2Callback(req, res) {
   //parse url string to url object
   let q = url.parse(req.url, true).query;
   //checks for error response from the url callback
@@ -106,7 +103,7 @@ export async function oauth2Callback(req, res) {
 }
 
 //function that fetches calendar data
-export async function getCalendarEvents(req, res, next) {
+async function getCalendarEvents(req, res, next) {
   //fetch credentials from req.user
   let credential = req?.user.tokens;
   //generate oauth2client credentials based of user credential
@@ -123,7 +120,7 @@ export async function getCalendarEvents(req, res, next) {
   res.json({ events: events });
 }
 
-export async function createEvents(req, res, next) {
+async function createEvents(req, res, next) {
   const event = {
     summary: 'Google I/O 2015',
     location: '800 Howard St., San Francisco, CA 94103',
@@ -170,7 +167,7 @@ export async function createEvents(req, res, next) {
 }
 
 //function that revokes access to user token
-export function revokeUserToken(res, req) {
+function revokeUserToken(res, req) {
   const data = req?.user.tokens;
   const revokeUrl = 'https://oauth2.googleapis.com/revoke';
   axios
@@ -186,3 +183,11 @@ export function revokeUserToken(res, req) {
       console.log(e);
     });
 }
+
+module.exports = {
+  authRequest,
+  oauth2Callback,
+  getCalendarEvents,
+  createEvents,
+  revokeUserToken,
+};

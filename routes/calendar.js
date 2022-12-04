@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { authorization } = require('../controllers/middlewareController');
+const { authorization } = require('../middleware/middleware');
 const {
   authRequest,
   oauth2Callback,

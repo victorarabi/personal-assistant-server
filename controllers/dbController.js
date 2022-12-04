@@ -10,7 +10,7 @@ fs.readFile(filePathDb, 'utf-8', (err, data) => {
   db = JSON.parse(data);
 });
 
-export function profileData(req, res) {
+function profileData(req, res) {
   let userData = {
     id: req.user.id,
     name: req.user.name,
@@ -19,3 +19,5 @@ export function profileData(req, res) {
   };
   res.send(userData);
 }
+
+module.exports = { profileData };

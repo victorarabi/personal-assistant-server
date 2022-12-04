@@ -1,13 +1,7 @@
 const fs = require('fs');
 
 //function that verify if user exists on data and returns user data for serealization
-export function authUserGoogle(
-  request,
-  accessToken,
-  refreshToken,
-  profile,
-  done
-) {
+function authUserGoogle(request, accessToken, refreshToken, profile, done) {
   let userCheck = [];
   //filters db to search for the user
   db.forEach((record) => {
@@ -53,7 +47,7 @@ export function authUserGoogle(
 }
 
 //function for local strategy that verifies if user exists on data and returns user data for serealization
-export function authUserLocal(user, password, done) {
+function authUserLocal(user, password, done) {
   //validates that the request is not null/blank
   if (!user || !password) {
     console.log('no user information was requested');
@@ -85,7 +79,7 @@ export function authUserLocal(user, password, done) {
 }
 
 //function that logout from the app
-export function logout(req, res, next) {
+function logout(req, res, next) {
   //logout from passaport session.
   req.logout(function (err) {
     if (err) {
@@ -94,3 +88,5 @@ export function logout(req, res, next) {
     res.redirect(process.env.CLIENT_URL);
   });
 }
+
+module.exports = { authUserGoogle, authUserLocal, logout };
