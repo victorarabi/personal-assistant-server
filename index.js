@@ -4,7 +4,9 @@ const cors = require('cors');
 const helmet = require('helmet');
 const passport = require('passport');
 require('dotenv').config();
-
+const authRoutes = require('./routes/auth');
+const profileRoutes = require('./routes/profile');
+const calendarRoutes = require('./routes/calendar');
 const app = express();
 const PORT = process.env.PORT || 5050;
 
@@ -28,46 +30,17 @@ app.use(
   })
 );
 
-//Passport Config
 // Initialize Passport middleware
 app.use(passport.initialize());
-// Passport.session middleware alters the `req` object with the `user` value
+// Passport.session middleware alters the `req` object with the `user` value based of session
 app.use(passport.session());
 
-//Routes
-
-//import routes
-const googleAuthRoutes = require('./routes/googleAuth');
-const localAuthRoutes = require('./routes/localAuth');
-const profileRoutes = require('./routes/profile');
-const calendarRouters = require('./routes/calendar');
-
-//auth route for google
-app.use('/auth/google', googleAuthRoutes);
-
-//auth route for local strategy (username + password)
-app.use('/auth/local', localAuthRoutes);
-
-//route for profile data
+//routes
+app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
+app.use('/calendar', calendarRoutes);
 
-//route for calendar data
-app.use('/calendar', calendarRouters);
-
-//logout route
-app.get('/logout', function (req, res, next) {
-  req.logout(function (err) {
-    if (err) {
-      return next(err);
-    }
-    res.redirect(process.env.CLIENT_URL);
-  });
-});
-
-app.get('/', (req, res, next) => {
-  res.json({ message: 'welcome to Personal Assistant API' });
-});
-
+//listen
 app.listen(PORT, () => {
   console.log(`🚀 Server listening to requests on port ${PORT}!`);
 });
