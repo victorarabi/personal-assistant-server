@@ -130,7 +130,7 @@ async function getCalendarEvents(req, res, next) {
   res.json({ events: userEvents });
 }
 
-async function createEvents(req, res, next) {
+async function createEvent(req, res, next) {
   const summary = req.body.summary;
   const description = req.body.description;
   const location = req.body.location;
@@ -181,6 +181,30 @@ async function createEvents(req, res, next) {
   );
 }
 
+//Deletes an event from primary calendar
+async function deleteEvent(req, res) {
+  //needs to change to req.body
+  const eventId = 'personalassistant51b993813c5341f9a68cfd67865ef154';
+  //save credentials from req.user
+  const credential = req?.user.tokens;
+  //generate oauth2client credentials based of user credential
+  oauth2Client.setCredentials(credential);
+  //defines calendar api call using user auth and create new event
+  const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+  calendar.events.delete(
+    { calendarId: 'primary', eventId: eventId },
+    function (err, event) {
+      if (err) {
+        res.json({
+          event: 'There was an error contacting the Calendar service: ' + err,
+        });
+        return;
+      }
+      res.json({ message: 'event successfully deleted.' });
+    }
+  );
+}
+
 //function that revokes access to user token
 function revokeUserToken(res, req) {
   const data = req?.user.tokens;
@@ -203,6 +227,7 @@ module.exports = {
   authRequest,
   oauth2Callback,
   getCalendarEvents,
-  createEvents,
+  createEvent,
+  deleteEvent,
   revokeUserToken,
 };
