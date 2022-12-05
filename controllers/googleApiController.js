@@ -180,8 +180,53 @@ async function createEvent(req, res, next) {
     }
   );
 }
+//updates an existing event from primary calendar
+async function updateEvent(req, res) {
+  //will change to req.body data
+  const event = {
+    summary: 'Brainstation I/O',
+    location: '44 Lillian street, Toronto',
+    description: 'CAPSTONE',
+    start: {
+      dateTime: '2022-12-17T09:00:00-07:00',
+      timeZone: 'America/Toronto',
+    },
+    end: {
+      dateTime: '2022-12-17T17:00:00-07:00',
+      timeZone: 'America/Toronto',
+    },
+    attendees: [],
+    reminders: {
+      useDefault: false,
+      overrides: [
+        { method: 'email', minutes: 24 * 60 },
+        { method: 'popup', minutes: 10 },
+      ],
+    },
+  };
+  //needs to change to req.body
+  const eventId = 'personalassistantce9842c5e61c4875b333de46df739d3e';
+  //save credentials from req.user
+  const credential = req?.user.tokens;
+  //generate oauth2client credentials based of user credential
+  oauth2Client.setCredentials(credential);
+  //defines calendar api call using user auth and create new event
+  const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+  calendar.events.update(
+    { calendarId: 'primary', eventId: eventId, requestBody: event },
+    function (err, event) {
+      if (err) {
+        res.json({
+          event: 'There was an error contacting the Calendar service: ' + err,
+        });
+        return;
+      }
+      res.json({ event: event.data });
+    }
+  );
+}
 
-//Deletes an event from primary calendar
+//Deletes an existing event from primary calendar
 async function deleteEvent(req, res) {
   //needs to change to req.body
   const eventId = 'personalassistant51b993813c5341f9a68cfd67865ef154';
@@ -228,6 +273,7 @@ module.exports = {
   oauth2Callback,
   getCalendarEvents,
   createEvent,
+  updateEvent,
   deleteEvent,
   revokeUserToken,
 };

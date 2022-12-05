@@ -6,6 +6,7 @@ const {
   oauth2Callback,
   getCalendarEvents,
   createEvent,
+  updateEvent,
   deleteEvent,
   revokeUserToken,
 } = require('../controllers/googleApiController');
@@ -20,6 +21,8 @@ router.get('/auth/revoke', authorization, revokeUserToken);
 router.get('/events', authorization, getCalendarEvents);
 //boilerplate get to try creating events - WIP will change to POST
 router.get('/events/create', authorization, createEvent);
+//boilerplate get to update event - WIP will change to POST
+router.get('/events/update', authorization, updateEvent);
 //boilerplate get to delete events - WIP will change to POST.
 router.get('/events/delete', authorization, deleteEvent);
 
