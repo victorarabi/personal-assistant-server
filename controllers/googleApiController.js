@@ -1,24 +1,19 @@
 const { google } = require('googleapis');
-const fs = require('fs');
+const url = require('url');
 const { v4: uuidv4 } = require('uuid');
+const {
+  addTokensToUser,
+  updateUserTokens,
+} = require('../controllers/dbController');
 require('dotenv').config();
 
 //environment variables
 const CLIENT_ID = process.env.CALENDAR_CLIENT_ID;
 const CLIENT_SECRET = process.env.CALENDAR_CLIENT_SECRET;
 const REDIRECT_URL = process.env.CALENDAR_REDIRECT_URL;
-const API_KEY = process.env.GOOGLE_API_KEY;
 const CLIENT_URL = process.env.CLIENT_URL;
 const DB_PATH = process.env.DB_PATH;
-
-//reads userDatabase and loads it into db variable
-let db = [];
-fs.readFile(DB_PATH, 'utf-8', (err, data) => {
-  if (err) {
-    console.log(err);
-  }
-  db = JSON.parse(data);
-});
+let userCredential = null;
 
 //create google oAuth2 Client.
 const oauth2Client = new google.auth.OAuth2(
@@ -61,43 +56,16 @@ async function oauth2Callback(req, res) {
     const { tokens } = await oauth2Client.getToken(q.code);
     //saves token data to variable
     userCredential = tokens;
-    //fetches user from db based of logged user info
-    const indexOfUser = db.findIndex((user) => {
-      if (user.email == req?.user.email) {
-        return true;
-      } else {
-        return false;
-      }
-    });
+    const userId = req.user?.id;
     //checks if it is the first request, then save credentials with refresh_token -> that only happens on the first time in which the user provides access to the app.
     if (userCredential.refresh_token) {
-      db[indexOfUser].calendarAuth = true;
-      db[indexOfUser].tokens.access_token = userCredential.access_token;
-      db[indexOfUser].tokens.refresh_token = userCredential.refresh_token;
-      db[indexOfUser].tokens.scope = userCredential.scope;
-      db[indexOfUser].tokens.token_type = userCredential.token_type;
-      db[indexOfUser].tokens.id_token = userCredential.id_token;
-      db[indexOfUser].tokens.expiry_date = userCredential.expiry_date;
-      db[indexOfUser].tokens.api_key = API_KEY;
+      addTokensToUser(userId, userCredential);
     } else {
       //if has already authorized the app, google auth2 server will not send refresh token
-      db[indexOfUser].calendarAuth = true;
-      db[indexOfUser].tokens.access_token = userCredential.access_token;
-      db[indexOfUser].tokens.scope = userCredential.scope;
-      db[indexOfUser].tokens.token_type = userCredential.token_type;
-      db[indexOfUser].tokens.id_token = userCredential.id_token;
-      db[indexOfUser].tokens.expiry_date = userCredential.expiry_date;
-      db[indexOfUser].tokens.api_key = API_KEY;
+      updateUserTokens(userId, userCredential);
     }
     //saves tokens to req.user
-    req.user.tokens = db[indexOfUser].tokens;
-    const dbUpdated = JSON.stringify(db);
-    fs.writeFile(filePathDb, dbUpdated, (err) => {
-      if (err) {
-        console.log(err);
-      }
-    });
-    console.log('User tokens:' + db[indexOfUser].tokens);
+    req.user.tokens = userCredential;
     //logic to  redirect back to backend front page
     res.redirect(CLIENT_URL);
   }

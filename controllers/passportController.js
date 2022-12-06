@@ -1,29 +1,17 @@
-const fs = require('fs');
-
-//reads userDatabase and loads it into db variable
-let filePathDb = './model/users.json';
-let db = [];
-fs.readFile(filePathDb, 'utf-8', (err, data) => {
-  if (err) {
-    console.log(err);
-  }
-  db = JSON.parse(data);
-});
+const {
+  searchByUserId,
+  searchByUsername,
+  createUser,
+} = require('../controllers/dbController');
 
 //function that verify if user exists on data and returns user data for serealization
 function authUserGoogle(request, accessToken, refreshToken, profile, done) {
-  let userCheck = [];
-  //filters db to search for the user
-  db.forEach((record) => {
-    if (record.id === profile.id) {
-      userCheck.push(record);
-    }
-  });
+  let userCheck = searchByUserId(profile.id);
   //Verify if there's an existing user
-  if (userCheck[0]) {
+  if (userCheck) {
     //if user exists, return the user to serealize function
-    // console.log('user found on database:', userCheck[0]);
-    return done(null, userCheck[0]);
+    // console.log('user found on database:', userCheck);
+    return done(null, userCheck);
   } else {
     //if user does not exist, creates a new user
     const newUser = {
@@ -45,45 +33,36 @@ function authUserGoogle(request, accessToken, refreshToken, profile, done) {
         api_key: null,
       },
     };
-    db.push(newUser);
-    fs.writeFile(filePath, JSON.stringify(db), (err) => {
-      if (err) {
-        console.log('Error creating user user', err);
-      }
-    });
+    createUser(newUser);
     // console.log('user created on db', newUser);
     return done(null, newUser);
   }
 }
 
 //function for local strategy that verifies if user exists on data and returns user data for serealization
-function authUserLocal(user, password, done) {
+function authUserLocal(username, password, done) {
+  console.log(username, password);
   //validates that the request is not null/blank
-  if (!user || !password) {
+  if (!username || !password) {
     console.log('no user information was requested');
     return done(null, false);
   }
-  let authenticatedUser = [];
-  //filters db to search for the user
-  db.forEach((record) => {
-    if (record.username === user) {
-      authenticatedUser.push(record);
-    }
-  });
+  //search if user exists on db
+  const authenticatedUser = searchByUsername(username);
   //Verify if there's an existing user
-  if (authenticatedUser[0]) {
-    if (authenticatedUser[0].password === password) {
+  if (authenticatedUser) {
+    if (authenticatedUser.password === password) {
       //if user exists and passowrd is correct, return the user to serealize function
-      console.log('user found on database:', authenticatedUser[0]);
-      return done(null, authenticatedUser[0]);
+      // console.log('user found on database:', authenticatedUser);
+      return done(null, authenticatedUser);
     } else {
       //if user password does not match, don't authorize
-      console.log('password is incorrect');
+      // console.log('password is incorrect');
       return done(null, false);
     }
   } else {
     //if user does not exist don't authorize
-    console.log('user not found on database');
+    // console.log('user not found on database');
     return done(null, false);
   }
 }

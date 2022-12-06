@@ -1,12 +1,113 @@
+const fs = require('fs');
+require('dotenv').config();
+
+//environment
+const API_KEY = process.env.GOOGLE_API_KEY;
+const DB_PATH = process.env.DB_PATH;
+
+//reads userDatabase and loads it into db variable
+let db = [];
+fs.readFile(DB_PATH, 'utf-8', (err, data) => {
+  if (err) {
+    console.log(err);
+  }
+  db = JSON.parse(data);
+});
+
+//search by user id
+function searchByUserId(userId) {
+  const user = db.filter((record) => {
+    if (record.id === userId) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+  if (user[0]) {
+    return user[0];
+  } else {
+    return null;
+  }
+}
+
+//search by username
+function searchByUsername(username) {
+  const user = db.filter((record) => {
+    if (record.username === username) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+  if (user[0]) {
+    return user[0];
+  } else {
+    return null;
+  }
+}
+
+//create a new user on the db
+function createUser(newUser) {
+  db.push(newUser);
+  fs.writeFile(DB_PATH, JSON.stringify(db), (err) => {
+    if (err) {
+      console.log('Error creating user user', err);
+    }
+  });
+}
+
+//add tokens to user on the db
+function addTokensToUser(id, userCredential) {
+  const indexOfUser = db.findIndex((user) => {
+    if (user.id == id) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+  db[indexOfUser].calendarAuth = true;
+  db[indexOfUser].tokens.access_token = userCredential.access_token;
+  db[indexOfUser].tokens.refresh_token = userCredential.refresh_token;
+  db[indexOfUser].tokens.scope = userCredential.scope;
+  db[indexOfUser].tokens.token_type = userCredential.token_type;
+  db[indexOfUser].tokens.id_token = userCredential.id_token;
+  db[indexOfUser].tokens.expiry_date = userCredential.expiry_date;
+  db[indexOfUser].tokens.api_key = API_KEY;
+}
+
+//function that update user tokens
+function updateUserTokens(id, userCredential) {
+  const indexOfUser = db.findIndex((user) => {
+    if (user.id == id) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+  db[indexOfUser].tokens.access_token = userCredential.access_token;
+  db[indexOfUser].tokens.scope = userCredential.scope;
+  db[indexOfUser].tokens.token_type = userCredential.token_type;
+  db[indexOfUser].tokens.id_token = userCredential.id_token;
+  db[indexOfUser].tokens.expiry_date = userCredential.expiry_date;
+}
+
 //function that loads user data
 function profileData(req, res) {
+  const user = searchByUserId(req.user.id);
   let userData = {
-    id: req.user.id,
-    name: req.user.name,
-    picture: req.user.picture,
-    email: req.user.email,
+    id: user.id,
+    name: user.name,
+    picture: user.picture,
+    email: user.email,
   };
   res.send(userData);
 }
 
-module.exports = { profileData };
+module.exports = {
+  searchByUserId,
+  searchByUsername,
+  createUser,
+  addTokensToUser,
+  updateUserTokens,
+  profileData,
+};

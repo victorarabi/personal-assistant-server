@@ -6,9 +6,10 @@ const passport = require('passport');
 const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
 const calendarRoutes = require('./routes/calendar');
+const { searchByUserId } = require('./controllers/dbController');
 const app = express();
-const PORT = process.env.PORT || 5050;
 require('dotenv').config();
+const PORT = process.env.PORT || 5050;
 
 // // Initialize HTTP Headers middleware
 app.use(helmet());
@@ -20,7 +21,7 @@ app.use(
     credentials: true,
   })
 );
-
+app.use(express.json());
 // Include express-session middleware (with additional config options required for Passport session)
 app.use(
   expressSession({
@@ -40,12 +41,7 @@ app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
 app.use('/calendar', calendarRoutes);
 
-//test route
-app.get('/', (req, res) => {
-  res.json({ message: new Date().toISOString() });
-});
-
-//listen
+//listen to requests
 app.listen(PORT, () => {
   console.log(`🚀 Server listening to requests on port ${PORT}!`);
 });
