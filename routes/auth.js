@@ -6,8 +6,9 @@ const LocalStrategy = require('passport-local').Strategy;
 const {
   authUserLocal,
   authUserGoogle,
+  signUp,
   logout,
-} = require('../controllers/passportController');
+} = require('../controllers/authController');
 const GoogleStrategy = require('passport-google-oauth2').Strategy;
 const { searchByUserId } = require('../controllers/dbController');
 require('dotenv').config();
@@ -80,6 +81,9 @@ router.post(
     res.send(true);
   }
 );
+
+//route to post a new user
+router.post('/local/signup', signUp);
 
 //route for logout
 router.get('/logout', logout);

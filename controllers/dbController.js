@@ -46,6 +46,28 @@ function searchByUsername(username) {
   }
 }
 
+//function that verifies if user exists on the db
+function checkUser(email, username) {
+  const checkEmail = db.filter((record) => {
+    if (record.email === email) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+  let checkUsername = searchByUsername(username);
+  if (checkEmail[0]) {
+    if (checkUsername) {
+      return 'email and username';
+    }
+    return 'email';
+  } else if (checkUsername) {
+    return 'username';
+  } else {
+    return false;
+  }
+}
+
 //create a new user on the db
 function createUser(newUser) {
   db.push(newUser);
@@ -73,6 +95,11 @@ function addTokensToUser(id, userCredential) {
   db[indexOfUser].tokens.id_token = userCredential.id_token;
   db[indexOfUser].tokens.expiry_date = userCredential.expiry_date;
   db[indexOfUser].tokens.api_key = API_KEY;
+  fs.writeFile(DB_PATH, JSON.stringify(db), (err) => {
+    if (err) {
+      console.log('Error updating user database', err);
+    }
+  });
 }
 
 //function that update user tokens
@@ -89,6 +116,11 @@ function updateUserTokens(id, userCredential) {
   db[indexOfUser].tokens.token_type = userCredential.token_type;
   db[indexOfUser].tokens.id_token = userCredential.id_token;
   db[indexOfUser].tokens.expiry_date = userCredential.expiry_date;
+  fs.writeFile(DB_PATH, JSON.stringify(db), (err) => {
+    if (err) {
+      console.log('Error updating user database', err);
+    }
+  });
 }
 
 //function that loads user data
@@ -106,6 +138,7 @@ function profileData(req, res) {
 module.exports = {
   searchByUserId,
   searchByUsername,
+  checkUser,
   createUser,
   addTokensToUser,
   updateUserTokens,

@@ -12,7 +12,6 @@ const CLIENT_ID = process.env.CALENDAR_CLIENT_ID;
 const CLIENT_SECRET = process.env.CALENDAR_CLIENT_SECRET;
 const REDIRECT_URL = process.env.CALENDAR_REDIRECT_URL;
 const CLIENT_URL = process.env.CLIENT_URL;
-const DB_PATH = process.env.DB_PATH;
 let userCredential = null;
 
 //create google oAuth2 Client.

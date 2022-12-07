@@ -41,6 +41,23 @@ app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
 app.use('/calendar', calendarRoutes);
 
+//test - DELETE
+app.get('/', (req, res) => {
+  const test = new Date(1669848856626);
+  const test1 = new Date(1670372128974);
+  const comparetest = (date) => {
+    const today = new Date();
+    if (today > date) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+  const compare = comparetest(test1);
+  console.log(test1);
+  res.json({ message: compare });
+});
+
 //listen to requests
 app.listen(PORT, () => {
   console.log(`🚀 Server listening to requests on port ${PORT}!`);
