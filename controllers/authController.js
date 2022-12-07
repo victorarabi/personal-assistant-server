@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
-import bcrypt from 'bcrypt';
+const bcrypt = require('bcrypt');
 const {
   searchByUserId,
   searchByUsername,
@@ -78,7 +78,7 @@ async function authUserLocal(username, password, done) {
 /**
  * function that signs an user up. Used with POST requests.
  */
-async function signup(req, res) {
+async function signUp(req, res) {
   const { name, email, username, password } = req.body;
   //verify if user exists on database
   const checkUserExists = checkUser(email, username);
@@ -127,4 +127,4 @@ function logout(req, res, next) {
   });
 }
 
-module.exports = { authUserGoogle, authUserLocal, signup, logout };
+module.exports = { authUserGoogle, authUserLocal, signUp, logout };

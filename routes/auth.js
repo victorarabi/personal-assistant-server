@@ -18,6 +18,7 @@ const clientID = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 const callbackURL = process.env.GOOGLE_CALLBACK_URL;
 
+//Passport setup
 //Use "GoogleStrategy" as the Authentication Strategy
 passport.use(
   new GoogleStrategy(
@@ -30,10 +31,8 @@ passport.use(
     authUserGoogle
   )
 );
-
 //use Local strategy for passport
 passport.use(new LocalStrategy(authUserLocal));
-
 //serealize user
 passport.serializeUser((user, done) => {
   // Store the user id, and provider in session
@@ -43,7 +42,6 @@ passport.serializeUser((user, done) => {
     tokens: user.tokens,
   });
 });
-
 //deserealize user
 passport.deserializeUser((user, done) => {
   let authenticatedUser = searchByUserId(user.id);
@@ -60,7 +58,6 @@ router.get(
     scope: ['profile', 'email'],
   })
 );
-
 //Callback route for the google authentication
 router.get(
   '/google/callback',
@@ -70,7 +67,6 @@ router.get(
     failureRedirect: `${process.env.CLIENT_URL}/auth-fail`,
   })
 );
-
 //route for local authenthication
 router.post(
   '/local/login',
@@ -81,10 +77,8 @@ router.post(
     res.send(true);
   }
 );
-
 //route to post a new user
 router.post('/local/signup', signUp);
-
 //route for logout
 router.get('/logout', logout);
 
