@@ -129,8 +129,10 @@ function profileData(req, res) {
   let userData = {
     id: user.id,
     name: user.name,
-    picture: user.picture,
     email: user.email,
+    picture: user.picture,
+    calendarAuth: user.calendarAuth,
+    tokenExpiryDate: user.tokens.expiry_date,
   };
   res.send(userData);
 }

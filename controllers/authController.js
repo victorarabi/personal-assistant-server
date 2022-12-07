@@ -45,7 +45,6 @@ function authUserGoogle(request, accessToken, refreshToken, profile, done) {
 
 //function for local strategy that verifies if user exists on data and returns user data for serealization
 async function authUserLocal(username, password, done) {
-  console.log(username, password);
   //validates that the request is not null/blank
   if (!username || !password) {
     console.log('no user information was requested');
