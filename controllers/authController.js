@@ -79,12 +79,16 @@ async function authUserLocal(username, password, done) {
  */
 async function signUp(req, res) {
   const { name, email, username, password } = req.body;
+  if (!name && !email && !username && !password) {
+    res.status(400).send('Information Missing! from the body data');
+  }
   //verify if user exists on database
   const checkUserExists = checkUser(email, username);
   //create user if no match was found
   if (!checkUserExists) {
-    const salt = await bcrypt.genSalt();
-    const hashPassword = await bcrypt(password, salt);
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashPassword = await bcrypt.hash(password, salt);
     const newUser = {
       provider: 'local',
       password: hashPassword,
@@ -126,4 +130,13 @@ function logout(req, res, next) {
   });
 }
 
-module.exports = { authUserGoogle, authUserLocal, signUp, logout };
+//function that informs if an user is logged into Passport Session.
+function authStatus(req, res, next) {
+  if (req.user) {
+    res.send(true);
+  } else {
+    res.send(false);
+  }
+}
+
+module.exports = { authUserGoogle, authUserLocal, signUp, logout, authStatus };

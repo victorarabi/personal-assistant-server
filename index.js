@@ -6,7 +6,7 @@ const passport = require('passport');
 const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
 const calendarRoutes = require('./routes/calendar');
-const { searchByUserId } = require('./controllers/dbController');
+const { authStatus } = require('./controllers/authController');
 const app = express();
 require('dotenv').config();
 const PORT = process.env.PORT || 5050;
@@ -42,9 +42,7 @@ app.use('/profile', profileRoutes);
 app.use('/calendar', calendarRoutes);
 
 //test - DELETE
-app.get('/', (req, res) => {
-  res.json({ message: 'welcome to personal assistant' });
-});
+app.get('/', authStatus);
 
 //listen to requests
 app.listen(PORT, () => {
