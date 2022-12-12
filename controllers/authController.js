@@ -52,12 +52,12 @@ async function authUserLocal(username, password, done) {
   }
   //search if user exists on db
   const authenticatedUser = searchByUsername(username);
-  const passwordMatch = await bcrypt.compare(
-    authenticatedUser.password,
-    password
-  );
   //Verify if there's an existing user
   if (authenticatedUser) {
+    const passwordMatch = await bcrypt.compare(
+      password,
+      authenticatedUser.password
+    );
     if (passwordMatch) {
       //if user exists and passowrd is correct, return the user to serealize function
       // console.log('user found on database:', authenticatedUser);

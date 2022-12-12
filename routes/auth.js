@@ -71,7 +71,7 @@ router.get(
 router.post(
   '/local/login',
   passport.authenticate('local', {
-    failureRedirect: `${process.env.CLIENT_URL}/`,
+    failureRedirect: '/',
   }),
   function (req, res) {
     res.send(true);
