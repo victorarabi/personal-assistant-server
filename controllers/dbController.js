@@ -116,6 +116,7 @@ function updateUserTokens(id, userCredential) {
   db[indexOfUser].tokens.token_type = userCredential.token_type;
   db[indexOfUser].tokens.id_token = userCredential.id_token;
   db[indexOfUser].tokens.expiry_date = userCredential.expiry_date;
+  console.log(db);
   fs.writeFile(DB_PATH, JSON.stringify(db), (err) => {
     if (err) {
       console.log('Error updating user database', err);

@@ -41,12 +41,14 @@ passport.serializeUser((user, done) => {
     provider: user.provider,
     tokens: user.tokens,
   });
+  return;
 });
 //deserealize user
 passport.deserializeUser((user, done) => {
   let authenticatedUser = searchByUserId(user.id);
   //filters db to search for the user based on the serealized info provided
   done(null, authenticatedUser);
+  return;
 });
 
 //routes

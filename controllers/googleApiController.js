@@ -94,7 +94,7 @@ async function getCalendarEvents(req, res, next) {
       return false;
     }
   });
-  res.json({ events: userEvents });
+  res.status(200).send(userEvents);
 }
 
 async function createEvent(req, res, next) {
