@@ -142,6 +142,7 @@ function updateUserPrimeEvents(id, eventId) {
     }
   });
 }
+
 //function that loads user data
 function profileData(req, res) {
   const user = searchByUserId(req.user.id);

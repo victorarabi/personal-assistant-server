@@ -14,7 +14,7 @@ const {
 //Auth routes
 
 //auth route for google calendar api
-router.get('/auth/request', authRequest);
+router.get('/auth/request', authorization, authRequest);
 //callback from the authorizationUrl
 router.get('/auth/callback', oauth2Callback);
 //revoke access to user data
