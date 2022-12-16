@@ -63,8 +63,6 @@ async function oauth2Callback(req, res) {
       //if has already authorized the app, google auth2 server will not send refresh token
       updateUserTokens(userId, userCredential);
     }
-    //saves tokens to req.user
-    req.user.tokens = userCredential;
     //logic to  redirect back to backend front page
     res.redirect(CLIENT_URL);
   }
