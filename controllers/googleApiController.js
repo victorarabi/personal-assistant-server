@@ -1,6 +1,7 @@
 const { google } = require('googleapis');
 const url = require('url');
 const { v4: uuidv4 } = require('uuid');
+const timezones = require('timezones-list');
 const {
   addTokensToUser,
   updateUserTokens,
@@ -96,36 +97,109 @@ async function getCalendarEvents(req, res, next) {
 }
 
 async function createEvent(req, res, next) {
-  const summary = req.body.summary;
-  const description = req.body.description;
-  const location = req.body.location;
-  //generates uniqueid for event
+  const {
+    summary,
+    description,
+    location,
+    startDate,
+    endDate,
+    reminder,
+    emailAlert,
+    popUpAlert,
+  } = req.body;
+
+  //checks to see if request body has all necessary data
+  if (
+    !summary ||
+    !description ||
+    !location ||
+    !startDate ||
+    !endDate ||
+    !reminder ||
+    !emailAlert ||
+    !popUpAlert
+  ) {
+    res.status(400).send('Information missing, please verify inputed data!');
+  }
+
+  //generates uniqueid for event with personalassistant tag
   const uuid = uuidv4();
   let newId = uuid.split('-');
   newId = newId.join('');
   const eventId = 'personalassistant' + newId;
+
+  //append timezone data to the start and end dates
+  const tz = timezones.default.filter((timezone) => {
+    if (timezone.tzCode === req.user.timezone) {
+      return true;
+    }
+    return false;
+  });
+  const utcCode = tz[0]?.utc;
+  const fullStartDate = startDate + ':00' + utcCode;
+  const fullEndDate = endDate + ':00' + utcCode;
+
+  //reminder data
+  let overrideArray = [];
+  if (reminder === 'yes') {
+    if (emailAlert.emailReminder === 'yes') {
+      if (emailAlert.reminderTimeUnit === 'minutes') {
+        overrideArray.push({
+          method: 'email',
+          minutes: emailAlert.reminderTime,
+        });
+      } else if (emailAlert.reminderTimeUnit === 'hours') {
+        overrideArray.push({
+          method: 'email',
+          minutes: emailAlert.reminderTime * 60,
+        });
+      } else if (emailAlert.reminderTime === 'days') {
+        overrideArray.push({
+          method: 'email',
+          minutes: emailAlert.reminderTime * 1440,
+        });
+      }
+    }
+    if (popUpAlert.emailReminder === 'yes') {
+      if (popUpAlert.reminderTimeUnit === 'minutes') {
+        overrideArray.push({
+          method: 'popup',
+          minutes: popUpAlert.reminderTime,
+        });
+      } else if (popUpAlert.reminderTimeUnit === 'hours') {
+        overrideArray.push({
+          method: 'popup',
+          minutes: popUpAlert.reminderTime * 60,
+        });
+      } else if (popUpAlert.reminderTime === 'days') {
+        overrideArray.push({
+          method: 'popup',
+          minutes: popUpAlert.reminderTime * 1440,
+        });
+      }
+    }
+  }
+
   const event = {
-    summary: 'Google I/O 2022',
+    summary: summary,
     id: eventId,
-    location: '800 Howard St., San Francisco, CA 94103',
-    description: "A chance to hear more about Google's developer products.",
+    location: location,
+    description: description,
     start: {
-      dateTime: '2022-12-05T09:00:00-07:00',
-      timeZone: 'America/Los_Angeles',
+      dateTime: fullStartDate,
+      timeZone: req.user.timezone,
     },
     end: {
-      dateTime: '2022-12-05T17:00:00-07:00',
-      timeZone: 'America/Los_Angeles',
+      dateTime: fullEndDate,
+      timeZone: req.user.timezone,
     },
     attendees: [],
     reminders: {
       useDefault: false,
-      overrides: [
-        { method: 'email', minutes: 24 * 60 },
-        { method: 'popup', minutes: 10 },
-      ],
+      overrides: overrideArray,
     },
   };
+
   //save credentials from req.user
   const credential = req?.user.tokens;
   //generate oauth2client credentials based of user credential
@@ -136,12 +210,11 @@ async function createEvent(req, res, next) {
     { calendarId: 'primary', resource: event },
     function (err, event) {
       if (err) {
-        res.json({
-          event: 'There was an error contacting the Calendar service: ' + err,
-        });
-        return;
+        res
+          .status(400)
+          .send('There was an error contacting the Calendar service: ' + err);
       }
-      res.json({ event: event.data });
+      res.status(201).send(event.data);
     }
   );
 }

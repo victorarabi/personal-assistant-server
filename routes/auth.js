@@ -40,6 +40,7 @@ passport.serializeUser((user, done) => {
     id: user.id,
     provider: user.provider,
     tokens: user.tokens,
+    timezone: user.timezone,
   });
   return;
 });

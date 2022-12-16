@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
+const timezones = require('timezones-list');
 const {
   searchByUserId,
   searchByUsername,
@@ -23,6 +24,7 @@ function authUserGoogle(request, accessToken, refreshToken, profile, done) {
       password: null,
       username: null,
       email: profile.email,
+      timezone: 'America/Toronto',
       id: profile.id,
       name: profile.displayName,
       picture: profile.picture,
@@ -78,9 +80,9 @@ async function authUserLocal(username, password, done) {
  * function that signs an user up. Used with POST requests.
  */
 async function signUp(req, res) {
-  const { name, email, username, password } = req.body;
-  if (!name && !email && !username && !password) {
-    res.status(400).send('Information Missing! from the body data');
+  const { name, email, username, password, timezone } = req.body;
+  if (!name || !email || !username || !password || !timezone) {
+    res.status(400).send('Information missing, please verify inputed data!');
   }
   //verify if user exists on database
   const checkUserExists = checkUser(email, username);
@@ -94,7 +96,8 @@ async function signUp(req, res) {
       password: hashPassword,
       username: username,
       email: email,
-      id: uuidv4,
+      timezone: timezone,
+      id: uuidv4(),
       name: name,
       picture: null,
       calendarAuth: false,

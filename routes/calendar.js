@@ -25,7 +25,7 @@ router.get('/auth/revoke', authorization, revokeUserToken);
 //request event data
 router.get('/events', authorization, getCalendarEvents);
 //boilerplate get to try creating events - WIP will change to POST
-router.get('/events/create', authorization, createEvent);
+router.post('/events/create', authorization, createEvent);
 //boilerplate get to update event - WIP will change to POST
 router.get('/events/update', authorization, updateEvent);
 //boilerplate get to delete events - WIP will change to POST.
