@@ -29,6 +29,7 @@ function authUserGoogle(request, accessToken, refreshToken, profile, done) {
       name: profile.displayName,
       picture: profile.picture,
       calendarAuth: false,
+      events: [],
       tokens: {
         access_token: null,
         refresh_token: null,

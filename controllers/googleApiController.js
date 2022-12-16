@@ -5,6 +5,7 @@ const timezones = require('timezones-list');
 const {
   addTokensToUser,
   updateUserTokens,
+  updateUserPrimeEvents,
 } = require('../controllers/dbController');
 require('dotenv').config();
 
@@ -98,6 +99,7 @@ async function getCalendarEvents(req, res, next) {
 
 //creates a new event entry at users primary calendar
 async function createEvent(req, res, next) {
+  //destructuring of req.body object
   const {
     summary,
     description,
@@ -108,7 +110,6 @@ async function createEvent(req, res, next) {
     emailAlert,
     popUpAlert,
   } = req.body;
-
   //checks to see if request body has all necessary data
   if (
     !summary ||
@@ -122,13 +123,11 @@ async function createEvent(req, res, next) {
   ) {
     res.status(400).send('Information missing, please verify inputed data!');
   }
-
   //generates uniqueid for event with personalassistant tag
   const uuid = uuidv4();
   let newId = uuid.split('-');
   newId = newId.join('');
   const eventId = 'personalassistant' + newId;
-
   //append timezone data to the start and end dates
   const tz = timezones.default.filter((timezone) => {
     if (timezone.tzCode === req.user.timezone) {
@@ -139,7 +138,6 @@ async function createEvent(req, res, next) {
   const utcCode = tz[0]?.utc;
   const fullStartDate = startDate + ':00' + utcCode;
   const fullEndDate = endDate + ':00' + utcCode;
-
   //email and push notification array settings
   let overrideArray = [];
   if (reminder === 'yes') {
@@ -183,7 +181,7 @@ async function createEvent(req, res, next) {
       }
     }
   }
-
+  //event object
   const event = {
     summary: summary,
     id: eventId,
@@ -217,10 +215,12 @@ async function createEvent(req, res, next) {
           .status(400)
           .send('There was an error contacting the Calendar service: ' + err);
       }
+      updateUserPrimeEvents(req.user.id, event.data.id);
       res.status(201).send(event.data);
     }
   );
 }
+
 //updates an existing event from primary calendar
 async function updateEvent(req, res) {
   //will change to req.body data

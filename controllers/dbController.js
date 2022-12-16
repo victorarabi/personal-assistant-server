@@ -123,6 +123,25 @@ function updateUserTokens(id, userCredential) {
   });
 }
 
+//function that updates user event data with prime event id
+function updateUserPrimeEvents(id, eventId) {
+  const indexOfUser = db.findIndex((user) => {
+    if (user.id == id) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+  db[indexOfUser].events = [
+    ...db[indexOfUser].events,
+    { primeEventId: eventId, secondaryEvents: [] },
+  ];
+  fs.writeFile(DB_PATH, JSON.stringify(db), (err) => {
+    if (err) {
+      console.log('Error updating user database', err);
+    }
+  });
+}
 //function that loads user data
 function profileData(req, res) {
   const user = searchByUserId(req.user.id);
@@ -144,5 +163,6 @@ module.exports = {
   createUser,
   addTokensToUser,
   updateUserTokens,
+  updateUserPrimeEvents,
   profileData,
 };
