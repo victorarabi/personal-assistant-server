@@ -101,6 +101,7 @@ async function signUp(req, res) {
       name: name,
       picture: null,
       calendarAuth: false,
+      events: [],
       tokens: {
         access_token: null,
         refresh_token: null,

@@ -96,6 +96,7 @@ async function getCalendarEvents(req, res, next) {
   res.status(200).send(userEvents);
 }
 
+//creates a new event entry at users primary calendar
 async function createEvent(req, res, next) {
   const {
     summary,
@@ -139,39 +140,42 @@ async function createEvent(req, res, next) {
   const fullStartDate = startDate + ':00' + utcCode;
   const fullEndDate = endDate + ':00' + utcCode;
 
-  //reminder data
+  //email and push notification array settings
   let overrideArray = [];
   if (reminder === 'yes') {
     if (emailAlert.emailReminder === 'yes') {
-      if (emailAlert.reminderTimeUnit === 'minutes') {
+      console.log(emailAlert.reminderTimeUnit);
+      if (emailAlert.reminderTimeUnit == 'minutes') {
+        console.log('I am at mins');
         overrideArray.push({
           method: 'email',
           minutes: emailAlert.reminderTime,
         });
-      } else if (emailAlert.reminderTimeUnit === 'hours') {
+      } else if (emailAlert.reminderTimeUnit == 'hours') {
+        console.log('I am at hours');
         overrideArray.push({
           method: 'email',
           minutes: emailAlert.reminderTime * 60,
         });
-      } else if (emailAlert.reminderTime === 'days') {
+      } else if (emailAlert.reminderTimeUnit == 'days') {
         overrideArray.push({
           method: 'email',
           minutes: emailAlert.reminderTime * 1440,
         });
       }
     }
-    if (popUpAlert.emailReminder === 'yes') {
-      if (popUpAlert.reminderTimeUnit === 'minutes') {
+    if (popUpAlert.popUpReminder === 'yes') {
+      if (popUpAlert.reminderTimeUnit == 'minutes') {
         overrideArray.push({
           method: 'popup',
           minutes: popUpAlert.reminderTime,
         });
-      } else if (popUpAlert.reminderTimeUnit === 'hours') {
+      } else if (popUpAlert.reminderTimeUnit == 'hours') {
         overrideArray.push({
           method: 'popup',
           minutes: popUpAlert.reminderTime * 60,
         });
-      } else if (popUpAlert.reminderTime === 'days') {
+      } else if (popUpAlert.reminderTimeUnit == 'days') {
         overrideArray.push({
           method: 'popup',
           minutes: popUpAlert.reminderTime * 1440,
@@ -199,7 +203,6 @@ async function createEvent(req, res, next) {
       overrides: overrideArray,
     },
   };
-
   //save credentials from req.user
   const credential = req?.user.tokens;
   //generate oauth2client credentials based of user credential
