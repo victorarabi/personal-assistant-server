@@ -6,6 +6,7 @@ const {
   addTokensToUser,
   updateUserTokens,
   updateUserPrimeEvents,
+  updateUserSecondaryEvents,
 } = require('../controllers/dbController');
 require('dotenv').config();
 
@@ -215,8 +216,139 @@ async function createEvent(req, res, next) {
           .status(400)
           .send('There was an error contacting the Calendar service: ' + err);
       }
-      updateUserPrimeEvents(req.user.id, event.data.id);
+      updateUserPrimeEvents(req.user.id, event?.data.id);
       res.status(201).send(event.data);
+    }
+  );
+}
+
+//creates a new event entry at users primary calendar
+async function createSecondaryEvent(req, res, next) {
+  //destructuring of req.body object
+  const {
+    summary,
+    description,
+    location,
+    startDate,
+    endDate,
+    reminder,
+    emailAlert,
+    popUpAlert,
+    primeEventId,
+  } = req.body;
+  //checks to see if request body has all necessary data
+  if (
+    !summary ||
+    !description ||
+    !location ||
+    !startDate ||
+    !endDate ||
+    !reminder ||
+    !emailAlert ||
+    !popUpAlert ||
+    !primeEventId
+  ) {
+    res.status(400).send('Information missing, please verify inputed data!');
+    return;
+  }
+  //generates uniqueid for event with personalassistant tag
+  const uuid = uuidv4();
+  let newId = uuid.split('-');
+  newId = newId.join('');
+  const eventId = 'personalassistant' + newId;
+  //append timezone data to the start and end dates
+  const tz = timezones.default.filter((timezone) => {
+    if (timezone.tzCode === req.user.timezone) {
+      return true;
+    }
+    return false;
+  });
+  const utcCode = tz[0]?.utc;
+  const fullStartDate = startDate + ':00' + utcCode;
+  const fullEndDate = endDate + ':00' + utcCode;
+  //email and push notification array settings
+  let overrideArray = [];
+  if (reminder === 'yes') {
+    if (emailAlert.emailReminder === 'yes') {
+      if (emailAlert.reminderTimeUnit == 'minutes') {
+        console.log('I am at mins');
+        overrideArray.push({
+          method: 'email',
+          minutes: emailAlert.reminderTime,
+        });
+      } else if (emailAlert.reminderTimeUnit == 'hours') {
+        overrideArray.push({
+          method: 'email',
+          minutes: emailAlert.reminderTime * 60,
+        });
+      } else if (emailAlert.reminderTimeUnit == 'days') {
+        overrideArray.push({
+          method: 'email',
+          minutes: emailAlert.reminderTime * 1440,
+        });
+      }
+    }
+    if (popUpAlert.popUpReminder === 'yes') {
+      if (popUpAlert.reminderTimeUnit == 'minutes') {
+        overrideArray.push({
+          method: 'popup',
+          minutes: popUpAlert.reminderTime,
+        });
+      } else if (popUpAlert.reminderTimeUnit == 'hours') {
+        overrideArray.push({
+          method: 'popup',
+          minutes: popUpAlert.reminderTime * 60,
+        });
+      } else if (popUpAlert.reminderTimeUnit == 'days') {
+        overrideArray.push({
+          method: 'popup',
+          minutes: popUpAlert.reminderTime * 1440,
+        });
+      }
+    }
+  }
+  //event object
+  const event = {
+    summary: summary,
+    id: eventId,
+    location: location,
+    description: description,
+    start: {
+      dateTime: fullStartDate,
+      timeZone: req.user.timezone,
+    },
+    end: {
+      dateTime: fullEndDate,
+      timeZone: req.user.timezone,
+    },
+    attendees: [],
+    reminders: {
+      useDefault: false,
+      overrides: overrideArray,
+    },
+  };
+  //save credentials from req.user
+  const credential = req?.user.tokens;
+  //generate oauth2client credentials based of user credential
+  oauth2Client.setCredentials(credential);
+  //defines calendar api call using user auth and create new event
+  const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+  calendar.events.insert(
+    { calendarId: 'primary', resource: event },
+    async function (err, event) {
+      if (err) {
+        res
+          .status(400)
+          .send('There was an error contacting the Calendar service: ' + err);
+        return;
+      } else {
+        updateUserSecondaryEvents(
+          req.user.id,
+          await event?.data.id,
+          primeEventId
+        );
+        res.status(201).send(event.data);
+      }
     }
   );
 }
@@ -260,7 +392,6 @@ async function updateEvent(req, res) {
         res.json({
           event: 'There was an error contacting the Calendar service: ' + err,
         });
-        return;
       }
       res.json({ event: event.data });
     }
@@ -314,6 +445,7 @@ module.exports = {
   oauth2Callback,
   getCalendarEvents,
   createEvent,
+  createSecondaryEvent,
   updateEvent,
   deleteEvent,
   revokeUserToken,
