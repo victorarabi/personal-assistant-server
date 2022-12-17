@@ -122,6 +122,7 @@ async function createEvent(req, res, next) {
     !popUpAlert
   ) {
     res.status(400).send('Information missing, please verify inputed data!');
+    return;
   }
   //generates uniqueid for event with personalassistant tag
   const uuid = uuidv4();
@@ -354,30 +355,102 @@ async function createSecondaryEvent(req, res, next) {
 
 //updates an existing event from primary calendar
 async function updateEvent(req, res) {
-  //will change to req.body data
+  //destructuring of req.body object
+  const {
+    id,
+    summary,
+    description,
+    location,
+    startDate,
+    endDate,
+    reminder,
+    emailAlert,
+    popUpAlert,
+  } = req.body;
+  //checks to see if request body has all necessary data
+  if (
+    !id ||
+    !summary ||
+    !description ||
+    !location ||
+    !startDate ||
+    !endDate ||
+    !reminder ||
+    !emailAlert ||
+    !popUpAlert
+  ) {
+    res.status(400).send('Information missing, please verify inputed data!');
+    return;
+  }
+  //append timezone data to the start and end dates
+  const tz = timezones.default.filter((timezone) => {
+    if (timezone.tzCode === req.user.timezone) {
+      return true;
+    }
+    return false;
+  });
+  const utcCode = tz[0]?.utc;
+  const fullStartDate = startDate + ':00' + utcCode;
+  const fullEndDate = endDate + ':00' + utcCode;
+  //email and push notification array settings
+  let overrideArray = [];
+  if (reminder === 'yes') {
+    if (emailAlert.emailReminder === 'yes') {
+      if (emailAlert.reminderTimeUnit == 'minutes') {
+        console.log('I am at mins');
+        overrideArray.push({
+          method: 'email',
+          minutes: emailAlert.reminderTime,
+        });
+      } else if (emailAlert.reminderTimeUnit == 'hours') {
+        overrideArray.push({
+          method: 'email',
+          minutes: emailAlert.reminderTime * 60,
+        });
+      } else if (emailAlert.reminderTimeUnit == 'days') {
+        overrideArray.push({
+          method: 'email',
+          minutes: emailAlert.reminderTime * 1440,
+        });
+      }
+    }
+    if (popUpAlert.popUpReminder === 'yes') {
+      if (popUpAlert.reminderTimeUnit == 'minutes') {
+        overrideArray.push({
+          method: 'popup',
+          minutes: popUpAlert.reminderTime,
+        });
+      } else if (popUpAlert.reminderTimeUnit == 'hours') {
+        overrideArray.push({
+          method: 'popup',
+          minutes: popUpAlert.reminderTime * 60,
+        });
+      } else if (popUpAlert.reminderTimeUnit == 'days') {
+        overrideArray.push({
+          method: 'popup',
+          minutes: popUpAlert.reminderTime * 1440,
+        });
+      }
+    }
+  }
   const event = {
-    summary: 'Brainstation I/O',
-    location: '44 Lillian street, Toronto',
-    description: 'CAPSTONE',
+    summary: summary,
+    location: location,
+    description: description,
     start: {
-      dateTime: '2022-12-17T09:00:00-07:00',
-      timeZone: 'America/Toronto',
+      dateTime: fullStartDate,
+      timeZone: req.user.timezone,
     },
     end: {
-      dateTime: '2022-12-17T17:00:00-07:00',
-      timeZone: 'America/Toronto',
+      dateTime: fullEndDate,
+      timeZone: req.user.timezone,
     },
     attendees: [],
     reminders: {
       useDefault: false,
-      overrides: [
-        { method: 'email', minutes: 24 * 60 },
-        { method: 'popup', minutes: 10 },
-      ],
+      overrides: overrideArray,
     },
   };
-  //needs to change to req.body
-  const eventId = 'personalassistantce9842c5e61c4875b333de46df739d3e';
   //save credentials from req.user
   const credential = req?.user.tokens;
   //generate oauth2client credentials based of user credential
@@ -385,14 +458,14 @@ async function updateEvent(req, res) {
   //defines calendar api call using user auth and create new event
   const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
   calendar.events.update(
-    { calendarId: 'primary', eventId: eventId, requestBody: event },
+    { calendarId: 'primary', eventId: id, requestBody: event },
     function (err, event) {
       if (err) {
-        res.json({
-          event: 'There was an error contacting the Calendar service: ' + err,
-        });
+        res
+          .status(400)
+          .status('There was an error contacting the Calendar service: ' + err);
       }
-      res.json({ event: event.data });
+      res.status(200).send('event has been updated!');
     }
   );
 }

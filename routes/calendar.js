@@ -25,8 +25,8 @@ router.get('/events', authorization, getCalendarEvents);
 router.post('/events/create', authorization, createEvent);
 //POST request to create new secondary events
 router.post('/events/create-secondary', authorization, createSecondaryEvent);
-//boilerplate get to update event - WIP will change to POST
-router.get('/events/update', authorization, updateEvent);
+//PATCH request to update event data
+router.patch('/events/update', authorization, updateEvent);
 //DELETE request to delete 1 or more events
 router.delete('/events/delete/:id', authorization, deleteEvent);
 module.exports = router;
