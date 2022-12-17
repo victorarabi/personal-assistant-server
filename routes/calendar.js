@@ -27,6 +27,6 @@ router.post('/events/create', authorization, createEvent);
 router.post('/events/create-secondary', authorization, createSecondaryEvent);
 //boilerplate get to update event - WIP will change to POST
 router.get('/events/update', authorization, updateEvent);
-//boilerplate get to delete events - WIP will change to POST.
-router.get('/events/delete', authorization, deleteEvent);
+//DELETE request to delete 1 or more events
+router.delete('/events/delete/:id', authorization, deleteEvent);
 module.exports = router;

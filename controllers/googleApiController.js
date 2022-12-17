@@ -400,7 +400,7 @@ async function updateEvent(req, res) {
 //Deletes an existing event from primary calendar
 async function deleteEvent(req, res) {
   //needs to change to req.body
-  const eventId = 'personalassistant51b993813c5341f9a68cfd67865ef154';
+  const { id } = req.params;
   //save credentials from req.user
   const credential = req?.user.tokens;
   //generate oauth2client credentials based of user credential
@@ -408,15 +408,15 @@ async function deleteEvent(req, res) {
   //defines calendar api call using user auth and create new event
   const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
   calendar.events.delete(
-    { calendarId: 'primary', eventId: eventId },
+    { calendarId: 'primary', eventId: id },
     function (err, event) {
       if (err) {
-        res.json({
-          event: 'There was an error contacting the Calendar service: ' + err,
-        });
+        res
+          .status(400)
+          .send('There was an error contacting the Calendar service: ' + err);
         return;
       }
-      res.json({ message: 'event successfully deleted.' });
+      res.status(200).send('event successfully deleted.');
     }
   );
 }
