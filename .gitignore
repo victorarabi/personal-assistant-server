@@ -24,9 +24,5 @@ yarn-error.log*
 
 #Environment files
 *.env
-*.json
-#Google credentials and tokens file
-credentials.json
-token.json
 #user database
 users.json
