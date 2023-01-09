@@ -2,6 +2,7 @@ const { google } = require('googleapis');
 const url = require('url');
 const { v4: uuidv4 } = require('uuid');
 const timezones = require('timezones-list');
+const { DateTime } = require('luxon');
 const {
   addTokensToUser,
   updateUserTokens,
@@ -73,6 +74,7 @@ async function oauth2Callback(req, res) {
 
 //function that fetches calendar data
 async function getCalendarEvents(req, res, next) {
+  const date = DateTime.now().minus({ days: 7 }).toString();
   //fetch credentials from req.user
   let credential = req?.user.tokens;
   //generate oauth2client credentials based of user credential
@@ -80,7 +82,7 @@ async function getCalendarEvents(req, res, next) {
   const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
   const response = await calendar.events.list({
     calendarId: 'primary',
-    timeMin: new Date().toISOString(),
+    timeMin: date,
     singleEvents: true,
     orderBy: 'startTime',
   });
