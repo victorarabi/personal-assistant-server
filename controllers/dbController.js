@@ -177,6 +177,7 @@ function profileData(req, res) {
     picture: user.picture,
     calendarAuth: user.calendarAuth,
     tokenExpiryDate: user.tokens.expiry_date,
+    timezone: user.timezone,
   };
   res.send(userData);
 }
