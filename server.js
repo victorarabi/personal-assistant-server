@@ -37,12 +37,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //routes
+app.get('/', authStatus);
 app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
 app.use('/calendar', calendarRoutes);
-
-//test - DELETE
-app.get('/', authStatus);
 
 //listen to requests
 app.listen(PORT, () => {

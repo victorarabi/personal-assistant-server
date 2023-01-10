@@ -85,6 +85,7 @@ async function signUp(req, res) {
   const { name, email, username, password, timezone } = req.body;
   if (!name || !email || !username || !password || !timezone) {
     res.status(400).send('Information missing, please verify inputed data!');
+    return;
   }
   //verify if user exists on database
   const checkUserExists = checkUser(email, username);

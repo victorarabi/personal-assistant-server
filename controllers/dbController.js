@@ -182,6 +182,29 @@ function profileData(req, res) {
   res.send(userData);
 }
 
+//updates user timezone
+function updateTimezone(req, res) {
+  const { timezone } = req.body;
+  if (!timezone) {
+    res.status(400).send('Information missing, please verify inputed data!');
+    return;
+  }
+  const indexOfUser = db.findIndex((user) => {
+    if (req.user.id == user.id) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+  db[indexOfUser].timezone = timezone;
+  fs.writeFile(DB_PATH, JSON.stringify(db), (err) => {
+    if (err) {
+      console.log('Error updating user database', err);
+    }
+  });
+  res.status(200).send('Timezone successfully updated');
+}
+
 module.exports = {
   searchByUserId,
   searchByUsername,
@@ -192,4 +215,5 @@ module.exports = {
   updateUserPrimeEvents,
   updateUserSecondaryEvents,
   profileData,
+  updateTimezone,
 };
