@@ -8,9 +8,11 @@ const {
   authUserGoogle,
   signUp,
   logout,
+  changeUserPassword,
 } = require('../controllers/authController');
 const GoogleStrategy = require('passport-google-oauth2').Strategy;
 const { searchByUserId } = require('../controllers/dbController');
+const { authorization } = require('../middleware/middleware');
 require('dotenv').config();
 
 //Environment variables
@@ -82,6 +84,8 @@ router.post(
 );
 //route to post a new user
 router.post('/local/signup', signUp);
+//POST request to change user password;
+router.post('/local/change-password', authorization, changeUserPassword);
 //route for logout
 router.get('/logout', logout);
 

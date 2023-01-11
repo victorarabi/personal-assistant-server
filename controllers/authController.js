@@ -1,12 +1,11 @@
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
-const timezones = require('timezones-list');
-const { DateTime } = require('luxon');
 const {
   searchByUserId,
   searchByUsername,
   checkUser,
   createUser,
+  updateUserPassword,
 } = require('./dbController');
 require('dotenv').config();
 
@@ -146,4 +145,34 @@ function authStatus(req, res, next) {
   }
 }
 
-module.exports = { authUserGoogle, authUserLocal, signUp, logout, authStatus };
+//changes user password
+async function changeUserPassword(req, res) {
+  const { currentPassword, newPassword } = req.body;
+  if (!currentPassword || !newPassword) {
+    res.status(400).send('Information missing, please verify inputed data!');
+    return;
+  }
+  const authenticatedUser = searchByUserId(req.user.id);
+  const passwordMatch = await bcrypt.compare(
+    currentPassword,
+    authenticatedUser.password
+  );
+  if (!passwordMatch) {
+    res.status(400).send('Current password is incorrect.');
+    return;
+  }
+  const saltRounds = 10;
+  const salt = await bcrypt.genSalt(saltRounds);
+  const hashPassword = await bcrypt.hash(newPassword, salt);
+  updateUserPassword(req.user.id, hashPassword);
+  res.status(200).send('Password succesfully updated');
+}
+
+module.exports = {
+  authUserGoogle,
+  authUserLocal,
+  signUp,
+  logout,
+  authStatus,
+  changeUserPassword,
+};

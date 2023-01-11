@@ -123,6 +123,23 @@ function updateUserTokens(id, userCredential) {
   });
 }
 
+//function that update user password
+function updateUserPassword(id, newPassword) {
+  const indexOfUser = db.findIndex((user) => {
+    if (user.id == id) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+  db[indexOfUser].password = newPassword;
+  fs.writeFile(DB_PATH, JSON.stringify(db), (err) => {
+    if (err) {
+      console.log('Error updating user database', err);
+    }
+  });
+}
+
 //function that updates user event data with prime event id
 function updateUserPrimeEvents(id, eventId) {
   const indexOfUser = db.findIndex((user) => {
@@ -212,6 +229,7 @@ module.exports = {
   createUser,
   addTokensToUser,
   updateUserTokens,
+  updateUserPassword,
   updateUserPrimeEvents,
   updateUserSecondaryEvents,
   profileData,
