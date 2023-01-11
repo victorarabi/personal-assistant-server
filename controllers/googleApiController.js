@@ -205,6 +205,7 @@ async function createEvent(req, res, next) {
       overrides: overrideArray,
     },
   };
+  console.log(event);
   //save credentials from req.user
   const credential = req?.user.tokens;
   //generate oauth2client credentials based of user credential
@@ -213,14 +214,14 @@ async function createEvent(req, res, next) {
   const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
   calendar.events.insert(
     { calendarId: 'primary', resource: event },
-    function (err, event) {
+    async function (err, event) {
       if (err) {
         res
           .status(400)
           .send('There was an error contacting the Calendar service: ' + err);
       }
-      updateUserPrimeEvents(req.user.id, event?.data.id);
-      res.status(201).send(event.data);
+      updateUserPrimeEvents(req.user.id, await event?.data.id);
+      res.status(201).send(await event?.data);
     }
   );
 }
@@ -350,7 +351,7 @@ async function createSecondaryEvent(req, res, next) {
           await event?.data.id,
           primeEventId
         );
-        res.status(201).send(event.data);
+        res.status(201).send(await event?.data);
       }
     }
   );
