@@ -3,6 +3,7 @@ const url = require('url');
 const { v4: uuidv4 } = require('uuid');
 const timezones = require('timezones-list');
 const { DateTime } = require('luxon');
+const axios = require('axios');
 const {
   addTokensToUser,
   updateUserTokens,
@@ -497,21 +498,24 @@ async function deleteEvent(req, res) {
 }
 
 //function that revokes access to user token
-function revokeUserToken(res, req) {
-  const data = req?.user.tokens;
-  const revokeUrl = 'https://oauth2.googleapis.com/revoke';
-  axios
-    .post(
-      revokeUrl,
-      { token: data },
-      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-    )
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((e) => {
-      console.log(e);
-    });
+function revokeUserToken(req, res) {
+  // const data = req?.user.tokens;
+  // const revokeUrl = 'https://oauth2.googleapis.com/revoke';
+  // axios
+  //   .post(
+  //     revokeUrl,
+  //     { token: data },
+  //     { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+  //   )
+  //   .then((response) => {
+  //     console.log(response);
+
+  //   })
+  //   .catch((e) => {
+  //     console.log(e);
+  //     res.status(400).send('error');
+  //   });
+  res.status(200).send('success');
 }
 
 module.exports = {
