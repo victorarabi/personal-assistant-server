@@ -25,11 +25,66 @@ This project is made to be an automation for Google Calendar. The idea of the pr
 - [![Passport][passport.js]][passport-url]
 - [![Google Cloud API][google-cloud]][google-cloud-url]
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## Features
 
 - Ability to login using Google credentials or by creating a local user within the app.
 - Create, Request, Update and Delete events and calendars from user's Google Account.
 - Privacy; Only events created through the app will be fetched by the app, maintaning user security and privacy for private events and calendars.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Getting Started
+
+To get a local copy up and running follow these simple example steps.
+
+### Prerequisites
+
+- Node.js must be installed on the machine in which you wish to test this app.
+
+* npm
+  ```sh
+  npm install npm@latest -g
+  ```
+
+### Instalation
+
+**Server**
+
+1. Set up the app, credentials and Auth Screen on [Google Cloud Console](https://console.cloud.google.com/). For more details, please follow this [guide](https://developers.google.com/calendar/api/quickstart/nodejs)
+2. Clone the repo
+   ```sh
+   git clone https://github.com/victorarabi/personal-assistant-server.git
+   ```
+3. Install NPM packages
+   ```sh
+   npm install
+   ```
+4. Change .env-model to .env and add the credentials acquired on step 1. You also need to define the URL and port for both the server and client.
+5. Run the server
+   ```sh
+   nodemon server.js
+   ```
+
+**Client**
+
+1. Clone the repo
+   ```sh
+   git clone https://github.com/victorarabi/personal-assistant-client.git
+   ```
+2. Install NPM packages
+   ```sh
+   npm install
+   ```
+3. Change .env-model to .env and copy the settings defined on server installation, step 4.
+4. Start the client
+
+   ```sh
+   npm start
+   ```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
