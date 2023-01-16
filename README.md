@@ -2,7 +2,7 @@
 
 # Personal Assistant
 
-[![Personal Assistant Logo][site-logo]]
+![Personal Assistant Logo][site-logo]
 
 ## About the project
 
