@@ -8,10 +8,22 @@
 
 This project is made to be an automation for Google Calendar. The idea of the project is to facilitate the creation of related events and the visualization of any upcoming event in a list like style.
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## Tech Stack
 
-Client: React, Axios, Sass
-Server: Node, Express, Passport, Google Cloud API
+### Client
+
+- [![React][react.js]][react-url]
+- [![Sass][sass]][sass-url]
+- [![Axios][axios]][axios-url]
+
+### Server
+
+- [![Node][node.js]][node-url]
+- [![Express][express.js]][express-url]
+- [![Passport][passport.js]][passport-url]
+- [![Google Cloud API][google-cloud]][google-cloud-url]
 
 ## Features
 
@@ -25,19 +37,17 @@ Server: Node, Express, Passport, Google Cloud API
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/victor-arabi/
 [site-logo]: /public/images/logo.png
-[next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
-[next-url]: https://nextjs.org/
 [react.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
 [react-url]: https://reactjs.org/
-[vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
-[vue-url]: https://vuejs.org/
-[angular.io]: https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white
-[angular-url]: https://angular.io/
-[svelte.dev]: https://img.shields.io/badge/Svelte-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00
-[svelte-url]: https://svelte.dev/
-[laravel.com]: https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white
-[laravel-url]: https://laravel.com
-[bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
-[bootstrap-url]: https://getbootstrap.com
-[jquery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
-[jquery-url]: https://jquery.com
+[node.js]: https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white
+[node-url]: https://nodejs.org/en/
+[express.js]: https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB
+[express-url]: https://expressjs.com
+[passport.js]: https://img.shields.io/badge/-Passport.js-lightgrey
+[passport-url]: https://www.passportjs.org
+[google-cloud]: https://img.shields.io/badge/-Google%20Cloud%20API-blue
+[google-cloud-url]: https://cloud.google.com/apis
+[axios]: https://img.shields.io/badge/-Axios-blueviolet
+[axios-url]: https://axios-http.com
+[sass]: https://img.shields.io/badge/SASS-hotpink.svg?style=for-the-badge&logo=SASS&logoColor=white
+[sass-url]: https://sass-lang.com
