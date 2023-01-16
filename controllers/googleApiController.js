@@ -205,7 +205,6 @@ async function createEvent(req, res, next) {
       overrides: overrideArray,
     },
   };
-  console.log(event);
   //save credentials from req.user
   const credential = req?.user.tokens;
   //generate oauth2client credentials based of user credential
@@ -220,7 +219,7 @@ async function createEvent(req, res, next) {
           .status(400)
           .send('There was an error contacting the Calendar service: ' + err);
       }
-      updateUserPrimeEvents(req.user.id, await event?.data.id);
+      // updateUserPrimeEvents(req.user.id, await event?.data.id);
       res.status(201).send(await event?.data);
     }
   );
@@ -346,11 +345,11 @@ async function createSecondaryEvent(req, res, next) {
           .send('There was an error contacting the Calendar service: ' + err);
         return;
       } else {
-        updateUserSecondaryEvents(
-          req.user.id,
-          await event?.data.id,
-          primeEventId
-        );
+        // updateUserSecondaryEvents(
+        //   req.user.id,
+        //   await event?.data.id,
+        //   primeEventId
+        // );
         res.status(201).send(await event?.data);
       }
     }
@@ -510,7 +509,6 @@ function revokeUserToken(req, res) {
   //   )
   //   .then((response) => {
   //     console.log(response);
-
   //   })
   //   .catch((e) => {
   //     console.log(e);
