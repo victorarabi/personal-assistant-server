@@ -10,6 +10,32 @@
 
 ![Personal Assistant Logo][site-logo]
 
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+      <ul>
+        <li><a href="#features">Features</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
+  </ol>
+</details>
+
 <!-- ABOUT THE PROJECT -->
 
 ## About the project
@@ -93,6 +119,46 @@ To get a local copy up and running follow these simple example steps.
    ```sh
    npm start
    ```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- ROADMAP -->
+
+## Roadmap
+
+- [ ] Add ability to delete related events in one click
+- [ ] Add JWT token support
+- [ ] Implement SQL as the database
+- [ ] Deploy website
+- [ ] Create daily preview and weather info on homepage
+- [ ] Support section
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- CONTACT -->
+
+## Contact
+
+Victor Arabi - victorarabi@hotmail.com
+
+Project Link:
+[Server](https://github.com/victorarabi/personal-assistant-server)
+[Client](https://github.com/victorarabi/personal-assistant-client)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- ACKNOWLEDGMENTS -->
+
+## Acknowledgments
+
+Links and guides that helped contribute to this project
+
+- [Google Calendar API Documentation](https://developers.google.com/calendar)
+- [Google OAuth 2.0 for Wev Server Applications](https://developers.google.com/identity/protocols/oauth2/web-server)
+- [BrainStation](https://brainstation.io)
+- [OAuth Google and Facebook guide](https://dev.to/asim_ansari7/setting-up-social-logins-with-node-js-and-passport-js-1m16)
+- [GitHub Pages](https://pages.github.com)
+- [Markdown badges](https://ileriayo.github.io/markdown-badges/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
