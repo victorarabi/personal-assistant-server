@@ -1,8 +1,16 @@
+<a name="readme-top"></a>
+
+<!-- PROJECT SHIELDS -->
+
 [![LinkedIn][linkedin-shield]][linkedin-url]
+
+<!-- PROJECT LOGO -->
 
 # Personal Assistant
 
 ![Personal Assistant Logo][site-logo]
+
+<!-- ABOUT THE PROJECT -->
 
 ## About the project
 
@@ -10,7 +18,7 @@ This project is made to be an automation for Google Calendar. The idea of the pr
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Tech Stack
+## Built With
 
 ### Client
 
@@ -34,6 +42,8 @@ This project is made to be an automation for Google Calendar. The idea of the pr
 - Privacy; Only events created through the app will be fetched by the app, maintaning user security and privacy for private events and calendars.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- GETTING STARTED -->
 
 ## Getting Started
 
